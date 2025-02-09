@@ -1,3 +1,4 @@
+import { templates } from '@/lib/constants';
 import { SignatureData } from '@/lib/types';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
@@ -6,8 +7,6 @@ interface SignaturePreviewProps {
 }
 
 export function SignaturePreview({ signatureData }: SignaturePreviewProps) {
-
-
   const SelectedTemplate = templates[signatureData.template as keyof typeof templates];
 
   return (

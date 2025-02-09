@@ -26,13 +26,13 @@ export default function SignatureGenerator() {
 
   const { toast } = useToast();
 
-  const progress = (step / 5) * 100;
+  const progress = (step / 6) * 100;
 
   useEffect(() => {
     localStorage.setItem("signatureData", JSON.stringify(signatureData));
   }, [signatureData]);
   const handleNext = () => {
-    if (step < 5) setStep(step + 1);
+    if (step < 6) setStep(step + 1);
   };
 
   const handlePrevious = () => {
@@ -115,7 +115,7 @@ export default function SignatureGenerator() {
               <ChevronLeft className="mr-1 h-4 w-4" />
               Previous
             </Button>
-            {step === 5 ? (
+            {step === 6 ? (
               <Button onClick={handleCopy}>
                 <Copy className="mr-2 h-4 w-4" />
                 Copy HTML

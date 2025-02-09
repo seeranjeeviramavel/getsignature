@@ -1,33 +1,42 @@
-import { SignatureData } from '@/lib/types';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { fontFamilies } from '@/lib/constants';
-import { 
-  User, 
-  Building2, 
-  Briefcase, 
-  Users, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  PenLine, 
-  AlertTriangle, 
-  Video, 
-  Leaf, 
-  MousePointer, 
-  Store, 
-  Code2, 
-  CreditCard, 
-  Image, 
-  Palette, 
-  Type, 
-  Layout 
-} from 'lucide-react';
-import { SignaturePreview } from './signature-preview';
+import { SignatureData } from "@/lib/types";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { fontFamilies, socialMediaPlatforms, templates } from "@/lib/constants";
+import {
+  User,
+  Building2,
+  Briefcase,
+  Users,
+  Phone,
+  Mail,
+  MapPin,
+  PenLine,
+  AlertTriangle,
+  Video,
+  Leaf,
+  MousePointer,
+  Store,
+  Code2,
+  CreditCard,
+  Image,
+  Palette,
+  Type,
+  Layout,
+  IdCard,
+} from "lucide-react";
+import "filepond/dist/filepond.min.css";
+import { FilePond, registerPlugin } from "react-filepond";
+import { FilePondFile } from "filepond";
+import { set } from "date-fns";
 
 interface SignatureWizardProps {
   step: number;
@@ -42,6 +51,38 @@ export function SignatureWizard({
 }: SignatureWizardProps) {
   const handleChange = (field: string, value: string | boolean) => {
     setSignatureData({ ...signatureData, [field]: value });
+  };
+  function fileToBase64(file: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!(file instanceof Blob)) {
+        reject(new TypeError("Provided file is not a Blob."));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const handleFileChange = async (field: string, fileItem: FilePondFile[]) => {
+    if (!fileItem || fileItem.length === 0) {
+      console.error("No file found in fileItem:", fileItem);
+      return;
+    }
+
+    const file = fileItem[0]?.file;
+
+    if (!(file instanceof Blob)) {
+      console.error("Invalid file type:", file);
+      return;
+    }
+    try {
+      const base64 = await fileToBase64(file);
+      handleChange(field, base64);
+    } catch (error) {
+      console.error("Error converting file to Base64:", error);
+    }
   };
 
   const handleThemeChange = (field: string, value: string) => {
@@ -64,7 +105,7 @@ export function SignatureWizard({
               <Input
                 id="name"
                 value={signatureData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
+                onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="John Doe"
               />
             </div>
@@ -75,7 +116,7 @@ export function SignatureWizard({
               <Input
                 id="pronouns"
                 value={signatureData.pronouns}
-                onChange={(e) => handleChange('pronouns', e.target.value)}
+                onChange={(e) => handleChange("pronouns", e.target.value)}
                 placeholder="they/them"
               />
             </div>
@@ -86,8 +127,23 @@ export function SignatureWizard({
               <Input
                 id="profileImage"
                 value={signatureData.profileImage}
-                onChange={(e) => handleChange('profileImage', e.target.value)}
+                onChange={(e) => handleChange("profileImage", e.target.value)}
                 placeholder="https://example.com/profile.jpg"
+              />
+
+              <FilePond
+                allowMultiple={false}
+                maxFiles={1}
+                onupdatefiles={(fileItems) => {
+                  handleFileChange("profileImage", fileItems);
+                }}
+                onremovefile={() => {
+                  handleChange("profileImage", "");
+                }}
+                acceptedFileTypes={["image/*"]}
+                labelIdle="Drag & Drop your image or <span class='filepond--label-action'>Browse</span>"
+                credits={false}
+                allowDrop
               />
             </div>
           </div>
@@ -104,8 +160,34 @@ export function SignatureWizard({
               <Input
                 id="company"
                 value={signatureData.company}
-                onChange={(e) => handleChange('company', e.target.value)}
+                onChange={(e) => handleChange("company", e.target.value)}
                 placeholder="Company Name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="company" className="flex items-center gap-2">
+                <Building2 className="h-4 w-4" /> Company Logo
+              </Label>
+              <Input
+                id="company"
+                value={signatureData.companylogo}
+                onChange={(e) => handleChange("companylogo", e.target.value)}
+                placeholder="https://example.com/logo.png"
+              />
+              <FilePond
+                allowMultiple={false}
+                maxFiles={1}
+                onupdatefiles={(fileItems) => {
+                  handleFileChange("companylogo", fileItems);
+                }}
+                onremovefile={() => {
+                  handleChange("companylogo", "");
+                }}
+                acceptedFileTypes={["image/*"]}
+                labelIdle="Drag & Drop your image or <span class='filepond--label-action'>Browse</span>"
+                credits={false}
+                allowDrop
               />
             </div>
             <div className="space-y-2">
@@ -115,7 +197,7 @@ export function SignatureWizard({
               <Input
                 id="position"
                 value={signatureData.position}
-                onChange={(e) => handleChange('position', e.target.value)}
+                onChange={(e) => handleChange("position", e.target.value)}
                 placeholder="Job Title"
               />
             </div>
@@ -126,7 +208,7 @@ export function SignatureWizard({
               <Input
                 id="department"
                 value={signatureData.department}
-                onChange={(e) => handleChange('department', e.target.value)}
+                onChange={(e) => handleChange("department", e.target.value)}
                 placeholder="Department"
               />
             </div>
@@ -145,7 +227,7 @@ export function SignatureWizard({
                 id="email"
                 type="email"
                 value={signatureData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
+                onChange={(e) => handleChange("email", e.target.value)}
                 placeholder="john@example.com"
               />
             </div>
@@ -156,7 +238,7 @@ export function SignatureWizard({
               <Input
                 id="cellphone"
                 value={signatureData.cellphone}
-                onChange={(e) => handleChange('cellphone', e.target.value)}
+                onChange={(e) => handleChange("cellphone", e.target.value)}
                 placeholder="+1 (555) 123-4567"
               />
             </div>
@@ -167,7 +249,7 @@ export function SignatureWizard({
               <Textarea
                 id="address"
                 value={signatureData.address}
-                onChange={(e) => handleChange('address', e.target.value)}
+                onChange={(e) => handleChange("address", e.target.value)}
                 placeholder="123 Business St, City, State 12345"
               />
             </div>
@@ -179,57 +261,127 @@ export function SignatureWizard({
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Additional Options</h2>
             <div className="space-y-2">
-              <Label htmlFor="signOff" className="flex items-center gap-2">
-                <PenLine className="h-4 w-4" /> Sign-off Message
+              <Label htmlFor={"banner"} className="flex items-center gap-2">
+                <IdCard />
+                Banner{" "}
               </Label>
               <Input
-                id="signOff"
-                value={signatureData.addons.signOff}
+                value={signatureData.addons.banner}
                 onChange={(e) =>
                   setSignatureData({
                     ...signatureData,
-                    addons: { ...signatureData.addons, signOff: e.target.value },
+                    addons: { ...signatureData.addons, banner: e.target.value },
                   })
                 }
-                placeholder="Best regards,"
+                placeholder={"http://example.com/banner.png"}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="disclaimer" className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" /> Disclaimer
-              </Label>
-              <Textarea
-                id="disclaimer"
-                value={signatureData.addons.disclaimer}
-                onChange={(e) =>
+
+              <FilePond
+                allowMultiple={false}
+                maxFiles={1}
+                onupdatefiles={async(fileItems) => {
                   setSignatureData({
                     ...signatureData,
-                    addons: { ...signatureData.addons, disclaimer: e.target.value },
-                  })
-                }
-                placeholder="Confidentiality notice..."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cta" className="flex items-center gap-2">
-                <MousePointer className="h-4 w-4" /> Call-to-Action
-              </Label>
-              <Input
-                id="cta"
-                value={signatureData.addons.customHtml}
-                onChange={(e) =>
+                    addons: {
+                      ...signatureData.addons,
+                      banner:await fileToBase64(fileItems[0].file),
+                    },
+                  });
+                }}
+                onremovefile={() => {
                   setSignatureData({
                     ...signatureData,
-                    addons: { ...signatureData.addons, customHtml: e.target.value },
-                  })
-                }
-                placeholder="<a href='#'>Book a meeting</a>"
+                    addons: {...signatureData.addons, banner: "" },
+                  })}}
+                acceptedFileTypes={["image/*"]}
+                labelIdle="Drag & Drop your image or <span class='filepond--label-action'>Browse</span>"
+                credits={false}
+                allowDrop
               />
             </div>
+            {[
+              {
+                id: "signOff",
+                label: "Sign-off Message",
+                icon: <PenLine className="h-4 w-4" />,
+              },
+              {
+                id: "disclaimer",
+                label: "Disclaimer",
+                icon: <AlertTriangle className="h-4 w-4" />,
+              },
+              {
+                id: "videoConference",
+                label: "Video Conference Link",
+                icon: <Video className="h-4 w-4" />,
+              },
+              {
+                id: "greenMessage",
+                label: "Green Message",
+                icon: <Leaf className="h-4 w-4" />,
+              },
+            ].map(({ id, label, icon }) => (
+              <div key={id} className="space-y-2">
+                <Label htmlFor={id} className="flex items-center gap-2">
+                  {icon} {label}
+                </Label>
+                <Input
+                  id={id}
+                  value={signatureData.addons[id]}
+                  onChange={(e) =>
+                    setSignatureData({
+                      ...signatureData,
+                      addons: { ...signatureData.addons, [id]: e.target.value },
+                    })
+                  }
+                  placeholder={`Enter ${label.toLowerCase()}...`}
+                />
+              </div>
+            ))}
+         
           </div>
         );
 
       case 5:
+        return (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Social Media Links</h2>
+            {socialMediaPlatforms.map((platform, index) => (
+              <div key={platform.name} className="space-y-2">
+                <Label
+                  htmlFor={platform.name}
+                  className="flex items-center gap-2"
+                >
+                  <img
+                    src={platform.icon}
+                    alt={platform.name}
+                    className="h-4 w-4"
+                  />{" "}
+                  {platform.name}
+                </Label>
+                <Input
+                  id={platform.name}
+                  value={signatureData.social[index]?.link || ""}
+                  onChange={(e) => {
+                    const updatedSocial = [...signatureData.social];
+                    updatedSocial[index] = {
+                      name: platform.name,
+                      link: e.target.value,
+                      icon: platform.icon,
+                    };
+                    setSignatureData({
+                      ...signatureData,
+                      social: updatedSocial,
+                    });
+                  }}
+                  placeholder={`Enter ${platform.name} profile URL...`}
+                />
+              </div>
+            ))}
+          </div>
+        );
+
+      case 6:
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Design & Template</h2>
@@ -239,7 +391,7 @@ export function SignatureWizard({
               </Label>
               <RadioGroup
                 value={signatureData.template.toString()}
-                onValueChange={(value) => handleChange('template', value)}
+                onValueChange={(value) => handleChange("template", value)}
                 className="grid grid-cols-2 gap-4"
               >
                 {Object.keys(templates).map((num) => (
@@ -256,7 +408,7 @@ export function SignatureWizard({
               </Label>
               <Select
                 value={signatureData.theme.font}
-                onValueChange={(value) => handleThemeChange('font', value)}
+                onValueChange={(value) => handleThemeChange("font", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select font" />
@@ -270,45 +422,23 @@ export function SignatureWizard({
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="textColor" className="flex items-center gap-2">
-                <Palette className="h-4 w-4" /> Text Color
-              </Label>
-              <Input
-                id="textColor"
-                type="color"
-                value={signatureData.theme.textColor}
-                onChange={(e) => handleThemeChange('textColor', e.target.value)}
-                className="h-10 w-full"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="backgroundColor" className="flex items-center gap-2">
-                <Palette className="h-4 w-4" /> Background Color
-              </Label>
-              <Input
-                id="backgroundColor"
-                type="color"
-                value={signatureData.theme.backgroundColor}
-                onChange={(e) => handleThemeChange('backgroundColor', e.target.value)}
-                className="h-10 w-full"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="iconColor" className="flex items-center gap-2">
-                <Palette className="h-4 w-4" /> Icon Color
-              </Label>
-              <Input
-                id="iconColor"
-                type="color"
-                value={signatureData.theme.iconColor}
-                onChange={(e) => handleThemeChange('iconColor', e.target.value)}
-                className="h-10 w-full"
-              />
-            </div>
+            {["textColor", "backgroundColor", "iconColor"].map((color) => (
+              <div key={color} className="space-y-2">
+                <Label htmlFor={color} className="flex items-center gap-2">
+                  <Palette className="h-4 w-4" />{" "}
+                  {color.replace("Color", " Color")}
+                </Label>
+                <Input
+                  id={color}
+                  type="color"
+                  value={signatureData.theme[color]}
+                  onChange={(e) => handleThemeChange(color, e.target.value)}
+                  className="h-10 w-full"
+                />
+              </div>
+            ))}
           </div>
         );
-
       default:
         return null;
     }

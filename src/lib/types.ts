@@ -1,16 +1,21 @@
+type Link = string;
+type Base64 = string;
+
 export interface SignatureData {
   name: string;
-  profileImage: string;
+  profileImage: Base64 | Link;
   pronouns: string;
   company: string;
   position: string;
+  companylogo:Base64 | Link;
+  website:Link;
   department: string;
   cellphone: string;
   email: string;
   address: string;
   social: {
     name: string;
-    link: string;
+    link: Link;
     icon: string;
   }[];
   addons: {
@@ -21,8 +26,7 @@ export interface SignatureData {
     cta: boolean;
     marketplace: boolean;
     customHtml: string;
-    businessCard: string;
-    banner: string;
+    banner: Base64 | Link;
   };
   theme: {
     font: string;
