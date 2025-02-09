@@ -426,6 +426,9 @@ export function ProfessionalTemplate({ data }: { data: SignatureData }) {
         fontSize: "10pt",
         fontFamily: data.theme.font,
         color: data.theme.textColor,
+        backgroundColor: data.theme.backgroundColor,
+        padding: "10px",
+        borderRadius: "5px",
       }}
     >
       <table
@@ -446,7 +449,7 @@ export function ProfessionalTemplate({ data }: { data: SignatureData }) {
             >
               <span
                 style={{
-                  fontSize: "24pt",
+                  fontSize: "20pt",
                   fontWeight: "bold",
                   color: data.theme.textColor,
                 }}
@@ -797,125 +800,124 @@ export function BoldTemplate({ data }: { data: SignatureData }) {
     <div
       style={{
         fontSize: "10pt",
-        fontFamily: data.theme.font,
-        color: data.theme.textColor,
-        backgroundColor: data.theme.backgroundColor,
+        fontFamily: data.theme.font || "Arial, sans-serif",
+        color: data.theme.textColor || "#000000",
+        backgroundColor: data.theme.backgroundColor || "transparent",
         padding: "10px",
-        maxWidth: "500px",
       }}
     >
-      <table cellSpacing={0} cellPadding={0} border={0} style={{ width: "100%", background: "transparent" }}>
+      <table
+        cellSpacing={0}
+        cellPadding={0}
+        border={0}
+        style={{ width: "100%", background: "transparent" }}
+      >
         <tbody>
           <tr>
-            {/* Profile Image */}
             {data.profileImage && (
-              <td style={{ width: "120px", verticalAlign: "top", paddingRight: "10px", borderRight: "1px solid #3e59ff" }}>
+              <td style={{ width: "105px", paddingTop: "15px", paddingBottom: "10px", borderTop: "1px solid #2c7da5" }}>
                 <img
                   src={data.profileImage}
                   alt="Profile"
-                  width="100"
-                  style={{ borderRadius: "50%", height: "auto", width: "100px" }}
+                  width="80"
+                  style={{ maxWidth: "80px", height: "auto", border: 0 }}
                 />
               </td>
             )}
-            <td style={{ paddingLeft: "10px", verticalAlign: "top" }}>
-              {/* Name and Pronouns */}
-              <span style={{ fontSize: "14pt", fontWeight: "bold", color: data.theme.textColor }}>
+            <td style={{ width: "25px", paddingTop: "15px", borderTop: "1px solid #2c7da5" }}></td>
+            <td style={{ paddingTop: "15px", borderTop: "1px solid #2c7da5", lineHeight: "15px" }}>
+              <span style={{ fontSize: "12pt", color: "#2c7da5", fontWeight: "bold" }}>
                 {data.name} {data.pronouns && `(${data.pronouns})`}
               </span>
               <br />
-              {/* Position and Department */}
-              <span style={{ fontSize: "10pt", color: "#846d53" }}>
-                {data.position} {data.department && `- ${data.department}`}
-              </span>
-
-              {/* Contact Information */}
-              <p style={{ margin: "10px 0", fontSize: "9pt", lineHeight: "16px", color: "#846d53" }}>
-
-                {data.cellphone && (
-                  <>
-                    <strong>M:</strong> {data.cellphone} <br />
-                  </>
-                )}
-                {data.email && (
-                  <>
-                    <strong>E:</strong>{" "}
-                    <a href={`mailto:${data.email}`} style={{ textDecoration: "none", color: "#846d53" }}>
-                      {data.email}
-                    </a>
-                    <span> | </span>
-                  </>
-                )}
-                {data.website && (
-                  <a href={data.website} target="_blank" rel="noopener noreferrer" style={{ color: "#846d53" }}>
-                    {data.website}
+              <span style={{ fontSize: "9pt", color: "#000000" }}>{data.position} {data.department && `- ${data.department}`}</span>
+              <br />
+              <br />
+              {data.email && (
+                <span style={{ fontSize: "9pt", color: "#000000" }}>
+                  <a
+                    href={`mailto:${data.email}`}
+                    style={{ textDecoration: "none", color: "#000000" }}
+                  >
+                    {data.email}
                   </a>
-                )}
-                <br />
-                {data.address && <span>{data.address}</span>}
-              </p>
-
-              {/* Social Links */}
-              {data.social.length > 0 && (
-                <div style={{ marginTop: "10px" }}>
-                  {data.social.map((social, index) =>
-                    social.link ? (
-                      <a key={index} href={social.link} target="_blank" rel="noopener noreferrer">
-                        <img
-                          src={social.icon}
-                          alt={social.name}
-                          width="16"
-                          height="16"
-                          style={{ marginRight: "5px", border: "0" }}
-                        />
-                      </a>
-                    ) : null
-                  )}
-                </div>
+                  <br />
+                </span>
+              )}
+              {data.cellphone && (
+                <span style={{ fontSize: "9pt", color: "#000000" }}>
+                  {data.cellphone} | {data.company}
+                  <br />
+                </span>
+              )}
+              {data.address && (
+                <span style={{ fontSize: "9pt", color: "#000000" }}>{data.address}</span>
               )}
             </td>
           </tr>
-
-          {/* Company Logo */}
           {data.companylogo && (
             <tr>
-              <td colSpan={2} style={{ textAlign: "center", paddingTop: "10px" }}>
-                <img src={data.companylogo} alt="Company Logo" width="120" style={{ height: "auto" }} />
+              <td colSpan={3} style={{ textAlign: "center", paddingTop: "10px" }}>
+                <img src={data.companylogo} alt="Company Logo" width="100%" style={{ height: "auto" }} />
               </td>
             </tr>
           )}
-
-          {/* Add-ons */}
-          {data.addons.banner && (
+          {data.social.length > 0 && (
             <tr>
-              <td colSpan={2} style={{ paddingTop: "10px", textAlign: "center" }}>
-                <a href={data.addons.banner} target="_blank" rel="noopener noreferrer">
-                  <img src={data.addons.banner} alt="Banner" width="100%" style={{ maxWidth: "500px", height: "auto" }} />
+              <td colSpan={3} style={{ paddingTop: "10px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  {data.social.map((social, index) => (
+                    <a
+                      key={index}
+                      href={social.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ marginRight: "5px" }}
+                    >
+                      <img
+                        src={social.icon}
+                        alt={social.name}
+                        width="18"
+                        height="18"
+                        style={{ border: 0 }}
+                      />
+                    </a>
+                  ))}
+                </div>
+              </td>
+            </tr>
+          )}
+          {data.website && (
+            <tr>
+              <td colSpan={3} style={{ paddingTop: "10px", textAlign: "left" }}>
+                <a
+                  href={data.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "#2c7da5", fontWeight: "bold" }}
+                >
+                  {data.website}
                 </a>
               </td>
             </tr>
           )}
-
-          {/* Optional Sections */}
           {data.addons.signOff && (
             <tr>
-              <td colSpan={2} style={{ fontSize: "9pt", paddingTop: "10px", fontStyle: "italic" }}>
+              <td colSpan={3} style={{ fontSize: "9pt", paddingTop: "10px", fontStyle: "italic" }}>
                 {data.addons.signOff}
               </td>
             </tr>
           )}
-
           {data.addons.disclaimer && (
             <tr>
-              <td colSpan={2} style={{ fontSize: "8pt", paddingTop: "10px", color: "#777" }}>
+              <td colSpan={3} style={{ fontSize: "8pt", paddingTop: "10px", color: "#777" }}>
                 {data.addons.disclaimer}
               </td>
             </tr>
           )}
-
           {data.addons.greenMessage && (
             <tr>
-              <td colSpan={2} style={{ fontSize: "8pt", paddingTop: "10px", color: "#4caf50" }}>
+              <td colSpan={3} style={{ fontSize: "8pt", paddingTop: "10px", color: "#4caf50" }}>
                 {data.addons.greenMessage}
               </td>
             </tr>
@@ -925,6 +927,7 @@ export function BoldTemplate({ data }: { data: SignatureData }) {
     </div>
   );
 }
+
 
 
 export function CreativeTemplate({ data }: { data: SignatureData }) {

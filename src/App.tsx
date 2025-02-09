@@ -4,7 +4,7 @@ import SignatureGenerator from '@/components/signature-generator';
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background px-20">
         <SignatureGenerator />
       </div>
     </ThemeProvider>

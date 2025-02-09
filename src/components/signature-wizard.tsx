@@ -23,10 +23,6 @@ import {
   AlertTriangle,
   Video,
   Leaf,
-  MousePointer,
-  Store,
-  Code2,
-  CreditCard,
   Image,
   Palette,
   Type,
@@ -34,9 +30,8 @@ import {
   IdCard,
 } from "lucide-react";
 import "filepond/dist/filepond.min.css";
-import { FilePond, registerPlugin } from "react-filepond";
+import { FilePond } from "react-filepond";
 import { FilePondFile } from "filepond";
-import { set } from "date-fns";
 
 interface SignatureWizardProps {
   step: number;
@@ -279,27 +274,28 @@ export function SignatureWizard({
               <FilePond
                 allowMultiple={false}
                 maxFiles={1}
-                onupdatefiles={async(fileItems) => {
+                onupdatefiles={async (fileItems) => {
                   setSignatureData({
                     ...signatureData,
                     addons: {
                       ...signatureData.addons,
-                      banner:await fileToBase64(fileItems[0].file),
+                      banner: await fileToBase64(fileItems[0].file),
                     },
                   });
                 }}
                 onremovefile={() => {
                   setSignatureData({
                     ...signatureData,
-                    addons: {...signatureData.addons, banner: "" },
-                  })}}
+                    addons: { ...signatureData.addons, banner: "" },
+                  });
+                }}
                 acceptedFileTypes={["image/*"]}
                 labelIdle="Drag & Drop your image or <span class='filepond--label-action'>Browse</span>"
                 credits={false}
                 allowDrop
               />
             </div>
-            {[
+            {([
               {
                 id: "signOff",
                 label: "Sign-off Message",
@@ -320,7 +316,7 @@ export function SignatureWizard({
                 label: "Green Message",
                 icon: <Leaf className="h-4 w-4" />,
               },
-            ].map(({ id, label, icon }) => (
+            ] as const).map(({ id, label, icon }) => (
               <div key={id} className="space-y-2">
                 <Label htmlFor={id} className="flex items-center gap-2">
                   {icon} {label}
@@ -338,7 +334,6 @@ export function SignatureWizard({
                 />
               </div>
             ))}
-         
           </div>
         );
 
@@ -422,21 +417,23 @@ export function SignatureWizard({
                 </SelectContent>
               </Select>
             </div>
-            {["textColor", "backgroundColor", "iconColor"].map((color) => (
-              <div key={color} className="space-y-2">
-                <Label htmlFor={color} className="flex items-center gap-2">
-                  <Palette className="h-4 w-4" />{" "}
-                  {color.replace("Color", " Color")}
-                </Label>
-                <Input
-                  id={color}
-                  type="color"
-                  value={signatureData.theme[color]}
-                  onChange={(e) => handleThemeChange(color, e.target.value)}
-                  className="h-10 w-full"
-                />
-              </div>
-            ))}
+            {(["textColor", "backgroundColor", "iconColor"] as const).map(
+              (color) => (
+                <div key={color} className="space-y-2">
+                  <Label htmlFor={color} className="flex items-center gap-2">
+                    <Palette className="h-4 w-4" />{" "}
+                    {color.replace("Color", " Color")}
+                  </Label>
+                  <Input
+                    id={color}
+                    type="color"
+                    value={signatureData.theme[color]}
+                    onChange={(e) => handleThemeChange(color, e.target.value)}
+                    className="h-10 w-full"
+                  />
+                </div>
+              )
+            )}
           </div>
         );
       default:
