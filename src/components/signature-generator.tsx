@@ -45,7 +45,6 @@ export default function SignatureGenerator() {
       : defaultSignatureData
   );
 
-  console.log(signatureData);
   const { toast } = useToast();
 
   const progress = (step / 6) * 100;
