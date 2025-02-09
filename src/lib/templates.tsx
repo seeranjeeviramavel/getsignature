@@ -366,7 +366,7 @@ export function ClassicTemplate({ data }: { data: SignatureData }) {
       >
         {data.social.length > 0 &&
           data.social.map(
-            (social, index) =>
+            (social) =>
               social.link && (
                 <>
                   <a
