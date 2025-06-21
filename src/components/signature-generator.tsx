@@ -64,6 +64,7 @@ export default function SignatureGenerator() {
     try {
       setShowConfetti(true);
       const signatureElement = document.getElementById("signature-preview");
+      console.log(signatureElement);
       if (signatureElement) {
         await navigator.clipboard.writeText(signatureElement.innerHTML);
         toast({
