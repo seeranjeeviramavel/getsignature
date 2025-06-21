@@ -60,13 +60,14 @@ export default function SignatureGenerator() {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleCopy = async () => {
+  const handleCopy =  () => {
     try {
       setShowConfetti(true);
       const signatureElement = document.getElementById("signature-preview");
-      console.log(signatureElement);
+      console.log(signatureElement.innerHTML);
       if (signatureElement) {
-        await navigator.clipboard.writeText(signatureElement.innerHTML);
+        console.log("if check")
+         navigator.clipboard.writeText(signatureElement.innerHTML);
         toast({
           title: "Signature copied!",
           description: "The signature HTML has been copied to your clipboard.",
